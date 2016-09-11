@@ -1,2 +1,1 @@
-# MJJLivePlayer
 # gwc
