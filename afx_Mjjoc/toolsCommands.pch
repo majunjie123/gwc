@@ -1,0 +1,15 @@
+//
+//  toolsCommands.pch
+//  afx_Mjjoc
+//
+//  Created by majunjie on 16/6/9.
+//  Copyright © 2016年 majunjie. All rights reserved.
+//
+
+#ifndef toolsCommands_pch
+#define toolsCommands_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* toolsCommands_pch */
