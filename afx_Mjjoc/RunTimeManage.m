@@ -7,6 +7,7 @@
 //
 
 #import "RunTimeManage.h"
+#import <objc/runtime.h>
 
 static char attributeName;
 
@@ -30,13 +31,14 @@ static char attributeName;
 
         // 得到属性名
         NSString *propertyName = [NSString stringWithUTF8String:name];
-
+        if([className valueForKey:propertyName]){
         // 获取属性值
         id propertyValue = [className valueForKey:propertyName];
-
+            
         if (propertyValue && propertyValue != nil) {
             [dict setObject:propertyValue forKey:propertyName];
         }
+    }
     }
     // 记得释放
     free(properties);

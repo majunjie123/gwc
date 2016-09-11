@@ -10,4 +10,6 @@
 
 @interface OutLinkViewController : UIViewController
 
+@property (nonatomic,strong) NSString *outLink;
+
 @end

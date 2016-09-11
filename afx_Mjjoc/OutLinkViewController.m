@@ -16,12 +16,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationController.tabBarController.tabBar.hidden = YES;
     // Do any additional setup after loading the view.
+    UIWebView *webView=[[UIWebView alloc]initWithFrame:CGRectMake(0, -20,SCREEN_WIDTH, SCREEN_HEIGHT+84)];
+    [webView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",self.outLink]]]];
+    [self.view addSubview:webView];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+- (void)viewWillAppear:(BOOL)animated {
+    
+    self.navigationController.tabBarController.tabBar.hidden =YES;
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    
+    self.navigationController.tabBarController.tabBar.hidden = YES;
 }
 
 /*

@@ -19,6 +19,11 @@
 
 + (void) updateTable:(id)table setString:(NSString *) setString WithString:(NSString *) string;
 
++(NSMutableArray *)getDataFromTable:(id)table;
+
++(NSMutableArray *)getDataID:(NSString *)string;
+
++(void) updateTable:(id)table WithKey:(NSString *) key WithValue:(NSString *)Value WithString:(NSString *)string;
 //升级数据库，删除用户登录数据
 //+ (void) updateDBWithNewVersion;
 

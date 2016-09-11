@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "UserAddressModel.h"
 @interface AddAdressViewController : UIViewController
-
+@property (nonatomic , strong)UserAddressModel *userAddressModel_Edit;
+@property(nonatomic,strong)NSString *addressId;
 @end

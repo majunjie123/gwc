@@ -10,6 +10,7 @@
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import <objc/runtime.h>
+#import "UserAddressModel.h"
 //#import "UserObject.h"
 //#import "MetaData.h"
 static FMDatabase *db = nil;
@@ -71,23 +72,23 @@ static FMDatabase *db = nil;
         
         NSString *sqlString = @"";
         
-        NSString *headerString = [NSString stringWithFormat:@"create table %@ (",[object class]];
+        NSString *headerString = [NSString stringWithFormat:@"create table %@ (u_id INTEGER PRIMARY KEY AUTOINCREMENT,",[object class]];
         NSString *footerString = @")";
         
         NSMutableString *midString=[NSMutableString stringWithCapacity:64];
-        
+       
         for (int i = 0; i < [keys count]; i++)
         {
             NSString *keyString = [keys objectAtIndex:i];
-        
-            if (i == [keys count] - 1)
+            if(![keyString isEqualToString:@"u_id"]){
+            if (i == [keys count] - 2)
             {
                 [midString appendFormat:@"%@ text",keyString];
                 break;
             }
             [midString appendFormat:@"%@ text,",keyString];;
         }
-
+        }
         sqlString = [NSString stringWithFormat:@"%@%@%@",headerString,midString,footerString];
         [db executeUpdate:sqlString];
     }
@@ -98,6 +99,7 @@ static FMDatabase *db = nil;
 + (void) insertProgramWithObject:(id) object
 {
     NSString *tableName = [NSString stringWithFormat:@"%@",[object class]];
+   
     if (!db)
     {
         [self creatTableWithObject:object];
@@ -114,7 +116,7 @@ static FMDatabase *db = nil;
     {
         [self creatTableWithObject:object];
     }
-    
+
     //获取对象所有key
     NSArray *keys = [self propertyKeys:object];
     
@@ -129,8 +131,8 @@ static FMDatabase *db = nil;
     {
         NSString *keyString = [keys objectAtIndex:i];
         NSString *valueString = [object valueForKey:keyString];
-
-        if (i == [keys count] - 1)
+if(![keyString isEqualToString:@"u_id"]){
+        if (i == [keys count] - 2)
         {
             [midKeyString appendFormat:@"%@",keyString];
             [midValueString appendFormat:@"\"%@\"",valueString];
@@ -143,6 +145,7 @@ static FMDatabase *db = nil;
 #ifdef DEBUG
         NSLog(@"----%@",valueString);
 #endif
+}
     }
     
     sqlString = [NSString stringWithFormat:@"%@(%@) values (%@)",headerString,midKeyString,midValueString];
@@ -151,6 +154,55 @@ static FMDatabase *db = nil;
     sqlString = [sqlString stringByReplacingOccurrencesOfString:@"(null)" withString:@"-1"];
     
     [db executeUpdate:sqlString];
+}
+
+//program 表数据读取
+//获取所有数据
++(NSMutableArray *)getDataFromTable:(id)table
+{
+    NSString *tableName = [NSString stringWithFormat:@"%@",table];
+    
+    if (!db)
+    {
+        [self creatDatabase];
+    }
+    
+    if (![db open])
+    {
+        return nil;
+    }
+    
+    [db setShouldCacheStatements:YES];
+    
+    if(![db tableExists:tableName])
+    {
+        return nil;
+    }
+    
+    //定义一个可变数组，用来存放查询的结果，返回给调用者
+    NSMutableArray *tableArray = [[NSMutableArray alloc] init];
+    NSString *sqlString = [NSString stringWithFormat:@"select * from %@ ",tableName];
+    //定义一个结果集，存放查询的数据
+    FMResultSet *rs = [db executeQuery:sqlString];
+    
+    NSArray *keys = nil;
+    
+    //判断结果集中是否有数据，如果有则取出数据
+    while ([rs next])
+    {
+        id tmpObject = [[NSClassFromString(tableName) alloc] init];
+        //获取对象所有key
+        keys = [self propertyKeys:tmpObject];
+        
+        for (int i = 0; i < [keys count]; i++)
+        {
+            NSString *keyString = [keys objectAtIndex:i];
+            [tmpObject setValue:[rs stringForColumn:keyString] forKey:keyString];
+        }
+        
+        [tableArray addObject:tmpObject];
+    }
+    return tableArray;
 }
 
 //program 表数据读取
@@ -202,6 +254,48 @@ static FMDatabase *db = nil;
     return tableArray;
 }
 
++(NSMutableArray *)getDataID:(NSString *)string
+{
+    if (!db)
+    {
+        [self creatDatabase];
+    }
+    
+    if (![db open])
+    {
+        return nil;
+    }
+    
+    [db setShouldCacheStatements:YES];
+    
+  
+    //定义一个可变数组，用来存放查询的结果，返回给调用者
+    NSMutableArray *tableArray = [[NSMutableArray alloc] init];
+    NSString *sqlString = [NSString stringWithFormat:@"select ID from UserAddressModel where u_tel='%@'",string];
+    //定义一个结果集，存放查询的数据
+    FMResultSet *rs = [db executeQuery:sqlString];
+    
+    NSArray *keys = nil;
+    
+    //判断结果集中是否有数据，如果有则取出数据
+    while ([rs next])
+    {
+        id tmpObject = [[UserAddressModel alloc] init];
+        //获取对象所有key
+        keys = [self propertyKeys:tmpObject];
+        
+        for (int i = 0; i < [keys count]; i++)
+        {
+            NSString *keyString = [keys objectAtIndex:i];
+            [tmpObject setValue:[rs stringForColumn:keyString] forKey:keyString];
+        }
+        
+        [tableArray addObject:tmpObject];
+    }
+    return tableArray;
+}
+
+
 + (void) deleteFromTable:(id)table WithString:(NSString *) string
 {
     if ([string isEqualToString:@""] || string == nil || [string isEqualToString:@"(null)"])
@@ -231,6 +325,7 @@ static FMDatabase *db = nil;
     [db executeUpdate:sqlString];
     
 }
+
 
 + (void) updateTable:(id)table setString:(NSString *) setString WithString:(NSString *) string
 {
@@ -275,6 +370,16 @@ static FMDatabase *db = nil;
         [self insertProgramWithObject:table];
     }
 }
+//update %@ set u_name='123' where 'u_id=1';
++(void) updateTable:(id)table WithKey:(NSString *) key WithValue:(NSString *)Value WithString:(NSString *)string{
+    NSString *tableName = [NSString stringWithFormat:@"%@",[table class]];
+
+    NSString *sqlString=[NSString stringWithFormat:@"update %@ set %@='%@' where %@",tableName,key,Value,string];
+    [db executeUpdate:sqlString];
+
+}
+
+
 
 //+ (void) updateDBWithNewVersion
 //{
@@ -313,5 +418,7 @@ static FMDatabase *db = nil;
 //        }
 //    }
 //}
+
+//update UserAddressModel set u_name='majunjie' where ID='1'
 
 @end

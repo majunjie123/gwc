@@ -6,8 +6,8 @@
 //  Copyright © 2016年 majunjie. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "SuperViewController.h"
 
-@interface MJJFristViewController : UIViewController
+@interface MJJFristViewController : SuperViewController
 
 @end

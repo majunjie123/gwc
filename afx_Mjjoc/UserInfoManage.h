@@ -10,4 +10,18 @@
 
 @interface UserInfoManage : NSObject
 
+//密码
++ (BOOL) validatePassword:(NSString *)passWord;
+
+
+//邮箱
++ (BOOL) validateEmail:(NSString *)email;
+
+
+//手机号码验证
++ (BOOL) validateMobile:(NSString *)mobile;
+
+
++(void)saveAddressInfo:(NSDictionary *)addressInfo WithName:(NSString *)name;
+
 @end

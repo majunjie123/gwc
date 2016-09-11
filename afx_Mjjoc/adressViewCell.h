@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface adressViewCell : UITableViewCell
+@property (nonatomic , strong) UIButton *editButton;
+- (void)setContentWithObject:(NSArray *)object AtIndexPath:(NSIndexPath *)indexPath;
 
 @end
